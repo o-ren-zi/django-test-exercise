@@ -18,8 +18,31 @@
       {% if task.completed %}
       <li>Status: Completed</li>
       {% else %}
-      <li>Status: Not Completed</li>
+      <li>Status: Not Completed</li> 
+      <h2>Comments</h2>
+      <ul>
+        {% for comment in comments %}
+          <li>{{ comment.content }} ({{ comment.posted_at}}) </li>
+        {% empty %}
+          <li>No comments yet</li>
+        {% endfor %}
+      </ul>
       {% endif %}
+    </ul>
+
+    <h3>Add a Comment</h3>
+    <form action="{% url 'detail' task.id %}" method="post">
+      {% csrf_token %}
+      <textarea name="comment" rows="3" cols="40" placeholder="Write your comment here..."></textarea>
+      <button type="submit">Post Comment</button>
+    </form>
+
+    <ul>
+      {% for comment in comments %}
+        <li><strong>{{ comment.posted_at|date:"y-m-d H:i" }}</strong>: {{ comment.content }}</li>
+      {%empty%}
+        <li>NO comments yet.</li>
+      {% endfor %}
     </ul>
 
     <div>
