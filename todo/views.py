@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, redirect
 from django.http import Http404
 from django.utils.timezone import make_aware
 from django.utils.dateparse import parse_datetime
-from todo.models import Task
+from todo.models import Task, Comment
 
 # Create your views here.
 
@@ -28,8 +28,17 @@ def detail(request, task_id):
         task = Task.objects.get(pk=task_id)
     except Task.DoesNotExist:
         raise Http404("Task does not exist")
+    
+    if request.method == "POST":
+        content = request.POST.get('comment')
+        if content:
+            Comment.objects.create(task=task, content=content)
+        
+    comments = task.comments.order_by('-posted_at')
+
     context = {
         'task': task,
+        'comments': comments
     }
     return render(request, 'todo/detail.html', context)
 
@@ -67,4 +76,6 @@ def close(request, task_id):
     task.completed = True
     task.save()
     return redirect(index)
+
+
 
